@@ -9,8 +9,9 @@ int main()
     sf::RenderWindow win(sf::VideoMode(WIN_WIDTH, WIN_HEIGHT), "Map generator", sf::Style::Close);
     sf::Texture texture;
 
-    Generator generator(80.0, 1, 1, 1);
-    earth = generator.libnoise_based_map_generation();
+    Generator generator(45.0, 1, 1, 1);
+    //earth = generator.plane_map_generation();
+    earth = generator.cylindric_map_generation();
 
     win.clear();
     win.draw(earth);

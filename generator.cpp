@@ -9,7 +9,6 @@ Generator::Generator() {
     this->nations_number = 1;
     this->macro_nations_number = 1;
     this->techno_groups_number = 1;
-    srand(time(0));
 }
 
 
@@ -23,7 +22,6 @@ Generator::Generator(float earth_p, int nations_n, int macro_nations_n, int tech
     this->nations_number = nations_n;
     this->macro_nations_number = macro_nations_n;
     this->techno_groups_number = techno_groups_n;
-    srand(time(0));
 }
 
 
@@ -32,69 +30,12 @@ Generator::~Generator() {
 }
 
 
-///Totally random version of the map generator (first one)
-sf::VertexArray Generator::random_map_generation() {
-    int i, x, y, total_earth;
-    sf::VertexArray earth_map(sf::Points, WIN_WIDTH * WIN_HEIGHT);
-
-    x = y = 0;
-    total_earth = (WIN_WIDTH * WIN_HEIGHT) * (this->earth_percent / 100);
-
-    for(i=0; i < WIN_WIDTH * WIN_HEIGHT; i++) {
-        earth_map[i].position = sf::Vector2f(x, y);
-        if((total_earth > 0) && (rand()%100 + 1 < this->earth_percent)) {
-            earth_map[i].color = sf::Color::Green;
-            total_earth--;
-        }
-        else
-            earth_map[i].color = sf::Color::Blue;
-        y++;
-        if(y == WIN_HEIGHT) {
-            y = 0;
-            x++;
-        }
-    }
-    printf("Earth pixels still available : %d\n", total_earth);
-    printf("Map generation done\n");
-    return earth_map;
-}
-
-
-///Libnoise-based version of the map generator (third one)
-sf::VertexArray Generator::libnoise_based_map_generation() {
-    ///Different types of noises
-    noise::module::Perlin perlin;
-    noise::module::RidgedMulti moutainNoise;
-    noise::module::Select finalTerrain;
-
-    ///Other variables
-    sf::VertexArray earth_map(sf::Points, WIN_WIDTH * WIN_HEIGHT);
-    noise::utils::NoiseMap heightMap;
-    noise::utils::NoiseMapBuilderPlane heightMapBuilder;
+///Rendering the map
+sf::VertexArray Generator::terrain_rendering(noise::utils::NoiseMap heightMap, sf::VertexArray earth_map) {
     RendererVertex renderer(earth_map);
     noise::utils::Image image;
     noise::utils::WriterBMP writer;
-    int x, y, i;
-    float shallow, shore, sand, grass, dirt, rock;
-
-    x = rand()%1000000000;
-    y = rand()%1000000000;
-    std::cout << "Map coordinates : " << std::endl << "x = " << x << std::endl << "y = " << y << std::endl;
-
-    ///Generating the terrain with the noise modules
-    perlin.SetOctaveCount(10);
-    perlin.SetPersistence(0.56);
-    perlin.SetFrequency(0.9);
-    moutainNoise.SetOctaveCount(10);
-    moutainNoise.SetLacunarity(2);
-    moutainNoise.SetFrequency(2);
-
-    finalTerrain.SetSourceModule(0, perlin);
-    finalTerrain.SetSourceModule(1, moutainNoise);
-    finalTerrain.SetControlModule(perlin);
-    finalTerrain.SetBounds(0.7 / ((earth_percent / 100) * 2), 1000);
-    finalTerrain.SetEdgeFalloff(1);
-    std::cout << "Moutain limit = " << 0.7 / ((earth_percent / 100) *2) << std::endl;
+    float shore, shallow, sand, grass, dirt, rock;
 
     ///Calculating the values of the gradient color
     shore = 1 - ((earth_percent / 100) * 2);
@@ -110,26 +51,18 @@ sf::VertexArray Generator::libnoise_based_map_generation() {
     std::cout << "dirt = " << dirt << std::endl;
     std::cout << "rock = " << rock << std::endl;
 
-    ///Generating the height map
-    heightMapBuilder.SetSourceModule(finalTerrain);
-    heightMapBuilder.SetDestNoiseMap(heightMap);
-    heightMapBuilder.SetDestSize(WIN_WIDTH, WIN_HEIGHT);
-    heightMapBuilder.SetBounds(x, x + 6.0, y, y + 3.375);
-    heightMapBuilder.Build();
-    std::cout << "Map building done" << std::endl;
-
     ///Generating the image and the vertex array
     renderer.SetSourceNoiseMap(heightMap);
     renderer.SetDestImage(image);
     renderer.ClearGradient();
-    renderer.AddGradientPoint(-1.0000, utils::Color(0, 0, 128, 255)); // deeps
-    renderer.AddGradientPoint(shallow, utils::Color(0, 0, 255, 255)); // shallow
-    renderer.AddGradientPoint(shore, utils::Color(0, 128, 255, 255)); // shore
-    renderer.AddGradientPoint(sand, utils::Color(240, 240, 64, 255)); // sand
-    renderer.AddGradientPoint(grass, utils::Color(32, 160, 0, 255)); // grass
-    renderer.AddGradientPoint(dirt, utils::Color(224, 224, 150, 255)); // dirt
-    renderer.AddGradientPoint(rock, utils::Color(128, 128, 128, 255)); // rock
-    renderer.AddGradientPoint(1.0000, utils::Color(255, 255, 255, 255)); // snow
+    renderer.AddGradientPoint(-1.0000, noise::utils::Color(0, 0, 128, 255)); // deeps
+    renderer.AddGradientPoint(shallow, noise::utils::Color(0, 0, 255, 255)); // shallow
+    renderer.AddGradientPoint(shore, noise::utils::Color(0, 128, 255, 255)); // shore
+    renderer.AddGradientPoint(sand, noise::utils::Color(240, 240, 64, 255)); // sand
+    renderer.AddGradientPoint(grass, noise::utils::Color(32, 160, 0, 255)); // grass
+    renderer.AddGradientPoint(dirt, noise::utils::Color(224, 224, 150, 255)); // dirt
+    renderer.AddGradientPoint(rock, noise::utils::Color(128, 128, 128, 255)); // rock
+    renderer.AddGradientPoint(1.0000, noise::utils::Color(255, 255, 255, 255)); // snow
     renderer.EnableLight();
     renderer.SetLightContrast(3.0);
     renderer.SetLightBrightness(1.6);
@@ -139,9 +72,99 @@ sf::VertexArray Generator::libnoise_based_map_generation() {
 
     ///Save the image of the map
     writer.SetSourceImage(image);
-    writer.SetDestFilename("exemple3.bmp");
+    writer.SetDestFilename("Map.bmp");
     writer.WriteDestFile();
     std::cout << "Image writing done" << std::endl;
+
+    return earth_map;
+}
+
+
+///Libnoise-based plane map generator
+sf::VertexArray Generator::plane_map_generation() {
+    ///Different types of noises
+    noise::module::Perlin perlin;
+    noise::module::RidgedMulti moutainNoise;
+    noise::module::Select terrain;
+
+    ///Other variables
+    sf::VertexArray earth_map(sf::Points, WIN_WIDTH * WIN_HEIGHT);
+    noise::utils::NoiseMap heightMap;
+    noise::utils::NoiseMapBuilderPlane heightMapBuilder;
+    float x, y;
+
+    srand(time(0));
+    x = rand()%1000000000;
+    y = rand()%1000000000;
+    std::cout << "Map coordinates : " << std::endl << "x = " << x << std::endl << "y = " << y << std::endl;
+
+    ///Generating the terrain with the noise modules
+    perlin.SetOctaveCount(10);
+    perlin.SetPersistence(0.56);
+    perlin.SetFrequency(0.9);
+    moutainNoise.SetOctaveCount(10);
+    moutainNoise.SetLacunarity(2);
+    moutainNoise.SetFrequency(2);
+
+    terrain.SetSourceModule(0, perlin);
+    terrain.SetSourceModule(1, moutainNoise);
+    terrain.SetControlModule(perlin);
+    terrain.SetBounds(0.7 / ((earth_percent / 100) * 2), 1000);
+    terrain.SetEdgeFalloff(1);
+    std::cout << "Moutain limit = " << 0.7 / ((earth_percent / 100) *2) << std::endl;
+
+    ///Generating the height map
+    heightMapBuilder.SetSourceModule(terrain);
+    heightMapBuilder.SetDestNoiseMap(heightMap);
+    heightMapBuilder.SetDestSize(WIN_WIDTH, WIN_HEIGHT);
+    heightMapBuilder.SetBounds(x, x + 6.0, y, y + 3.375);
+    heightMapBuilder.Build();
+    std::cout << "Map building done" << std::endl;
+
+    earth_map = terrain_rendering(heightMap, earth_map);
+
+    std::cout << "Map generation done" << std::endl;
+    return earth_map;
+}
+
+
+///Libnoise-based cylindric map generator
+sf::VertexArray Generator::cylindric_map_generation() {
+    ///Noises variables
+    noise::module::Perlin perlin;
+    noise::module::RidgedMulti moutainNoise;
+    noise::module::Select terrain;
+
+    ///Other variables
+    noise::utils::NoiseMap heightMap;
+    noise::utils::NoiseMapBuilderCylinder heightMapBuilder;
+    sf::VertexArray earth_map(sf::Points, WIN_WIDTH * WIN_HEIGHT);
+    RendererVertex renderer(earth_map);
+
+    ///Generating the terrain with the noise modules
+    perlin.SetOctaveCount(10);
+    perlin.SetPersistence(0.56);
+    perlin.SetFrequency(0.9);
+    moutainNoise.SetOctaveCount(10);
+    moutainNoise.SetLacunarity(2);
+    moutainNoise.SetFrequency(2);
+
+    terrain.SetSourceModule(0, perlin);
+    terrain.SetSourceModule(1, moutainNoise);
+    terrain.SetControlModule(perlin);
+    terrain.SetBounds(0.7 / ((earth_percent / 100) * 2), 1000);
+    terrain.SetEdgeFalloff(1);
+    std::cout << "Moutain limit = " << 0.7 / ((earth_percent / 100) *2) << std::endl;
+
+    ///Generating the height map
+    heightMapBuilder.SetSourceModule(terrain);
+    heightMapBuilder.SetDestNoiseMap(heightMap);
+    heightMapBuilder.SetDestSize(WIN_WIDTH, WIN_HEIGHT);
+    heightMapBuilder.SetBounds(0.0, 300.0, 0.0, 7.0);
+    heightMapBuilder.Build();
+    std::cout << "Map building done" << std::endl;
+
+    earth_map = terrain_rendering(heightMap, earth_map);
 
     std::cout << "Map generation done" << std::endl;
     return earth_map;
