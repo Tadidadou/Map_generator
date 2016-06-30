@@ -3,14 +3,12 @@
 
 using namespace std;
 
-int main()
-{
+int main() {
     sf::VertexArray earth;
     sf::RenderWindow win(sf::VideoMode(WIN_WIDTH, WIN_HEIGHT), "Map generator", sf::Style::Close);
     sf::Texture texture;
 
-    Generator generator(45.0, 1, 1, 1);
-    //earth = generator.plane_map_generation();
+    Generator generator(40.0);
     earth = generator.cylindric_map_generation();
 
     win.clear();
