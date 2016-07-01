@@ -12,8 +12,16 @@ public:
     sf::VertexArray plane_map_generation();
     sf::VertexArray cylindric_map_generation();
 
-private:
-    sf::VertexArray terrain_rendering(noise::utils::NoiseMap, sf::VertexArray);
+    sf::VertexArray GetEarth_map() {
+        return this->earth_map;
+    }
+    noise::utils::NoiseMap GetHeightMap () {
+        return this->heightMap;
+    }
 
+private:
+    sf::VertexArray terrain_rendering(sf::VertexArray);
+    noise::utils::NoiseMap heightMap;
     float earth_percent;
+    sf::VertexArray earth_map;
 };

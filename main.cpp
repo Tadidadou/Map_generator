@@ -1,3 +1,5 @@
+#include "map_cut.hpp"
+#include "province.hpp"
 #include "generator.hpp"
 #include "constants.hpp"
 
@@ -6,7 +8,7 @@ using namespace std;
 int main() {
     sf::VertexArray earth;
     sf::RenderWindow win(sf::VideoMode(WIN_WIDTH, WIN_HEIGHT), "Map generator", sf::Style::Close);
-    sf::Texture texture;
+    std::vector<Province> all_provinces;
 
     Generator generator(40.0);
     earth = generator.cylindric_map_generation();
@@ -15,11 +17,25 @@ int main() {
     win.draw(earth);
     win.display();
 
+    Map_cut map_cut(earth);
+    all_provinces = map_cut.provinces_generation(generator.GetHeightMap());
+
     while(win.isOpen()) {
         sf::Event event;
         while(win.pollEvent(event)) {
-            if(event.type == sf::Event::Closed)
-                win.close();
+            ///Events management
+            switch(event.type) {
+                ///Window closed
+                case sf::Event::Closed:
+                    win.close();
+                    break;
+                ///One mouse button pressed
+                case sf::Event::MouseButtonPressed:
+
+                    break;
+                default:
+                    break;
+            }
         }
     }
     return 0;

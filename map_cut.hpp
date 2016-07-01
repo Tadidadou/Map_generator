@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 #include <vector>
+#include "noiseutils.h"
 #include "province.hpp"
 #include "continent.hpp"
 
@@ -11,8 +12,10 @@ public:
     Map_cut(sf::VertexArray);
     ~Map_cut();
 
-    std::vector<Province> province_generation();
-    std::vector<Continent> continent_generation();
+    std::vector<Province> provinces_generation(noise::utils::NoiseMap heightMap);
+    std::vector<Continent> continents_generation();
+    sf::VertexArray draw_provinces();
+    sf::VertexArray draw_continents();
 
     std::vector<Province> GetProvinces() {
         return this->all_provinces;

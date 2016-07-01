@@ -25,7 +25,7 @@ Generator::~Generator() {
 
 
 ///Rendering the map
-sf::VertexArray Generator::terrain_rendering(noise::utils::NoiseMap heightMap, sf::VertexArray earth_map) {
+sf::VertexArray Generator::terrain_rendering(sf::VertexArray earth_map) {
     RendererVertex renderer(earth_map);
     noise::utils::Image image;
     noise::utils::WriterBMP writer;
@@ -87,7 +87,6 @@ sf::VertexArray Generator::plane_map_generation() {
 
     ///Other variables
     sf::VertexArray earth_map(sf::Points, WIN_WIDTH * WIN_HEIGHT);
-    noise::utils::NoiseMap heightMap;
     noise::utils::NoiseMapBuilderPlane heightMapBuilder;
     float x, y;
 
@@ -119,7 +118,7 @@ sf::VertexArray Generator::plane_map_generation() {
     heightMapBuilder.Build();
     std::cout << "Map building done" << std::endl;
 
-    earth_map = terrain_rendering(heightMap, earth_map);
+    earth_map = terrain_rendering(earth_map);
 
     std::cout << "Map generation done" << std::endl;
     return earth_map;
@@ -134,7 +133,6 @@ sf::VertexArray Generator::cylindric_map_generation() {
     noise::module::Select terrain;
 
     ///Other variables
-    noise::utils::NoiseMap heightMap;
     noise::utils::NoiseMapBuilderCylinder heightMapBuilder;
     sf::VertexArray earth_map(sf::Points, WIN_WIDTH * WIN_HEIGHT);
     RendererVertex renderer(earth_map);
@@ -167,7 +165,7 @@ sf::VertexArray Generator::cylindric_map_generation() {
     heightMapBuilder.Build();
     std::cout << "Map building done" << std::endl;
 
-    earth_map = terrain_rendering(heightMap, earth_map);
+    earth_map = terrain_rendering(earth_map);
 
     std::cout << "Map generation done" << std::endl;
     return earth_map;
