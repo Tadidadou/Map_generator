@@ -1,18 +1,31 @@
 #include <iostream>
 #include <stdio.h>
 #include <SFML/Graphics.hpp>
-#include <vector>
 #include <string>
+#include <vector>
 #include "province.hpp"
 
 class Continent {
-private:
-    Continent(std::vector<Province>);
+public:
+    Continent(std::vector<Province>, int);
     ~Continent();
 
-    std::vector<Continent> generation();
+    void add_province(Province);
 
-public:
+    std::string GetName() {
+        return this->name;
+    }
+    sf::Color GetColor() {
+        return this->color;
+    }
+    int GetId() {
+        return this->id;
+    }
+    void SetName(std::string new_name) {
+        this->name = new_name;
+    }
+
+private:
     int id;
     std::string name;
     sf::Color color;
