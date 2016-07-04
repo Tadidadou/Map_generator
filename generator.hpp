@@ -18,6 +18,9 @@ public:
     noise::utils::NoiseMap GetHeightMap () {
         return this->heightMap;
     }
+    float GetEarth_percent() {
+        return this->earth_percent;
+    }
 
 private:
     sf::VertexArray terrain_rendering(sf::VertexArray);

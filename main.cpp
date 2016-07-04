@@ -17,8 +17,8 @@ int main() {
     win.draw(earth);
     win.display();
 
-    Map_cut map_cut(earth);
-    all_provinces = map_cut.provinces_generation(generator.GetHeightMap());
+    Map_cut map_cut(earth, 200);
+    all_provinces = map_cut.provinces_generation(generator.GetHeightMap(), generator.GetEarth_percent());
 
     while(win.isOpen()) {
         sf::Event event;
