@@ -1,5 +1,4 @@
 #include "map_cut.hpp"
-#include "constants.hpp"
 
 
 Map_cut::Map_cut(sf::VertexArray earth_m, int nb_prov) {
@@ -125,7 +124,7 @@ int Map_cut::explore(int x, int y) {
 ///Generating all the province
 std::vector<Province> Map_cut::provinces_generation(noise::utils::NoiseMap heightMap, float earth_percent) {
     int i, x, y, num;
-    bool flag = false;
+    IterationResult iterationResult;
     srand(time(0));
 
     prov_map_generation(heightMap, earth_percent);
@@ -143,9 +142,14 @@ std::vector<Province> Map_cut::provinces_generation(noise::utils::NoiseMap heigh
 
     int cpt = 0;
     ///Adding every earth pixel to a province
-    while(flag == false) {
-        flag = true;
-        for(x=0; x < WIN_WIDTH; x++) {
+    iterationResult.changes = 1;
+    while(iterationResult.changes != 0) {
+        iterationResult = connexity(prov_map, 50);
+
+        for (auto& rp : iterationResult.newRegionPoints)
+            prov_map[rp.x][rp.y].num_prov = rp.id;
+
+        /*for(x=0; x < WIN_WIDTH; x++) {
             for(y=0; y < WIN_HEIGHT; y++) {
                 if(prov_map[x][y].type != WATER && prov_map[x][y].num_prov == 0) {
                     num = explore(x, y);
@@ -155,7 +159,7 @@ std::vector<Province> Map_cut::provinces_generation(noise::utils::NoiseMap heigh
                     }
                 }
             }
-        }
+        }*/
         cpt++;
         std::cout << "Iteration n." << cpt << std::endl;
     }

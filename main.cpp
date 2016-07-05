@@ -8,6 +8,7 @@ using namespace std;
 int main() {
     sf::VertexArray earth;
     sf::RenderWindow win(sf::VideoMode(WIN_WIDTH, WIN_HEIGHT), "Map generator", sf::Style::Close);
+    win.setFramerateLimit(60);
     std::vector<Province> all_provinces;
 
     Generator generator(40.0);
@@ -17,22 +18,20 @@ int main() {
     win.draw(earth);
     win.display();
 
-    cout << "Ok" << endl;
-    Map_cut map_cut(earth, 20);
+    Map_cut map_cut(earth, 200);
     all_provinces = map_cut.provinces_generation(generator.GetHeightMap(), generator.GetEarth_percent());
 
-    for(int x=0; x < WIN_WIDTH; x++) {
-        for(int y=0; y < WIN_HEIGHT; y++) {
+     for(int y=0; y < WIN_HEIGHT; y++) {
+        for(int x=0; x < WIN_WIDTH; x++) {
             if(map_cut.prov_map[x][y].num_prov) {
                 srand(map_cut.prov_map[x][y].num_prov);
-                earth[x * WIN_HEIGHT + y].position = sf::Vector2f(x, y);
-                earth[x * WIN_HEIGHT + y].color = sf::Color(rand()%255, rand()%255, rand()%255);
+                earth[y * WIN_WIDTH + x].position = sf::Vector2f(x, y);
+                earth[y * WIN_WIDTH + x].color = sf::Color(rand()%255, rand()%255, rand()%255);
             }
         }
     }
-    win.clear();
-    win.draw(earth);
-    win.display();
+
+
 
     while(win.isOpen()) {
         sf::Event event;
@@ -51,6 +50,10 @@ int main() {
                     break;
             }
         }
+
+        win.clear();
+        win.draw(earth);
+        win.display();
     }
     return 0;
 }

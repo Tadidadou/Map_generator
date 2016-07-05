@@ -5,20 +5,9 @@
 #include "noiseutils.h"
 #include "province.hpp"
 #include "continent.hpp"
-
-enum terrain_type {
-    WATER,
-    GRASS,
-    FOREST, //in prevision
-    DIRT,
-    HILL,
-    MOUNTAIN
-};
-
-struct provinces_map {
-    terrain_type type;
-    int num_prov;
-};
+#include "connexity.hpp"
+#include "constants.hpp"
+#include "utils.hpp"
 
 class Map_cut {
 public:
