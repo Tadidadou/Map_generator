@@ -36,13 +36,15 @@ public:
     std::vector<Continent> GetContinents() {
         return this->all_continents;
     }
+    std::vector<std::vector<provinces_map>> prov_map;
 
 private:
     Province new_province(int, sf::VertexArray);
     void prov_map_generation(noise::utils::NoiseMap, float);
+    int explore(int, int);
 
     int nb_prov;
-    std::vector<std::vector<provinces_map>> prov_map;
+
     std::vector<Province> all_provinces;
     std::vector<Continent> all_continents;
     sf::VertexArray earth_map;
