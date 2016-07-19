@@ -18,7 +18,7 @@ Map_cut::~Map_cut() {
 ///Generating the provinces_map
 void Map_cut::prov_map_generation(noise::utils::NoiseMap heightMap, float earth_percent) {
     float earth, grass, dirt, hill, mountain;
-    int x, y, cpt;
+    int x, y;
     x = 0;
     y = 0;
 
@@ -27,7 +27,6 @@ void Map_cut::prov_map_generation(noise::utils::NoiseMap heightMap, float earth_
     hill = earth + (0.5000 * (earth_percent / 100) * 2);
     mountain = earth + (0.7500 * (earth_percent / 100) * 2);
 
-    cpt = 0;
     for(x=0; x < WIN_WIDTH; x++) {
         for(y=0; y < WIN_HEIGHT; y++) {
             if(heightMap.GetValue(x, y) < earth)
@@ -45,79 +44,6 @@ void Map_cut::prov_map_generation(noise::utils::NoiseMap heightMap, float earth_
             prov_map[x][y].num_prov = 0;
         }
     }
-}
-
-
-///Determining the province number
-int Map_cut::explore(int x, int y) {
-    int num = 0;
-    if(y == WIN_HEIGHT - 1) {
-        if(prov_map[(x-1)%WIN_WIDTH][(y-1)].type != WATER && prov_map[(x-1)%WIN_WIDTH][(y-1)].num_prov != 0)
-            num = prov_map[(x-1)][(y-1)].num_prov;
-        if(prov_map[(x-1)%WIN_WIDTH][y].type != WATER && prov_map[(x-1)%WIN_WIDTH][y].num_prov != 0)
-            num = prov_map[(x-1)%WIN_WIDTH][y].num_prov;
-        if(prov_map[x%WIN_WIDTH][(y-1)].type != WATER && prov_map[x%WIN_WIDTH][(y-1)].num_prov != 0)
-            num = prov_map[x%WIN_WIDTH][(y-1)].num_prov;
-        if(prov_map[(x+1)%WIN_WIDTH][(y-1)].type != WATER && prov_map[(x+1)%WIN_WIDTH][(y-1)].num_prov != 0)
-            num = prov_map[(x+1)%WIN_WIDTH][(y-1)].num_prov;
-        if(prov_map[(x+1)%WIN_WIDTH][y].type != WATER && prov_map[(x+1)%WIN_WIDTH][y].num_prov != 0)
-            num = prov_map[(x+1)%WIN_WIDTH][y].num_prov;
-    }
-    else if(x == WIN_WIDTH - 1) {
-        if(prov_map[(x-1)%WIN_WIDTH][(y-1)].type != WATER && prov_map[(x-1)%WIN_WIDTH][(y-1)].num_prov != 0)
-            num = prov_map[(x-1)%WIN_WIDTH][(y-1)].num_prov;
-        if(prov_map[(x-1%WIN_WIDTH)][y].type != WATER && prov_map[(x-1)%WIN_WIDTH][y].num_prov != 0)
-            num = prov_map[(x-1)%WIN_WIDTH][y].num_prov;
-        if(prov_map[(x-1)%WIN_WIDTH][(y+1)].type != WATER && prov_map[(x-1)%WIN_WIDTH][(y+1)].num_prov != 0)
-            num = prov_map[(x-1)%WIN_WIDTH][(y+1)].num_prov;
-        if(prov_map[x%WIN_WIDTH][(y-1)].type != WATER && prov_map[x%WIN_WIDTH][(y-1)].num_prov != 0)
-            num = prov_map[x%WIN_WIDTH][(y-1)].num_prov;
-        if(prov_map[x%WIN_WIDTH][(y+1)].type != WATER && prov_map[x%WIN_WIDTH][(y+1)].num_prov != 0)
-            num = prov_map[x%WIN_WIDTH][(y+1)].num_prov;
-    }
-    else if(y == 0) {
-        if(prov_map[(x-1)%WIN_WIDTH][y].type != WATER && prov_map[(x-1)%WIN_WIDTH][y].num_prov != 0)
-            num = prov_map[(x-1)%WIN_WIDTH][y].num_prov;
-        if(prov_map[(x-1)%WIN_WIDTH][(y+1)].type != WATER && prov_map[(x-1)%WIN_WIDTH][(y+1)].num_prov != 0)
-            num = prov_map[(x-1)%WIN_WIDTH][(y+1)].num_prov;
-        if(prov_map[x%WIN_WIDTH][(y+1)].type != WATER && prov_map[x%WIN_WIDTH][(y+1)].num_prov != 0)
-            num = prov_map[x%WIN_WIDTH][(y+1)].num_prov;
-        if(prov_map[(x+1)%WIN_WIDTH][y].type != WATER && prov_map[(x+1)%WIN_WIDTH][y].num_prov != 0)
-            num = prov_map[(x+1)%WIN_WIDTH][y].num_prov;
-        if(prov_map[(x+1)%WIN_WIDTH][(y+1)].type != WATER && prov_map[(x+1)%WIN_WIDTH][(y+1)].num_prov != 0)
-            num = prov_map[(x+1)%WIN_WIDTH][(y+1)].num_prov;
-    }
-    else if(x == 0) {
-        if(prov_map[x%WIN_WIDTH][(y-1)].type != WATER && prov_map[x%WIN_WIDTH][(y-1)].num_prov != 0)
-            num = prov_map[x%WIN_WIDTH][(y-1)].num_prov;
-        if(prov_map[x%WIN_WIDTH][(y+1)].type != WATER && prov_map[x%WIN_WIDTH][(y+1)].num_prov != 0)
-            num = prov_map[x%WIN_WIDTH][(y+1)].num_prov;
-        if(prov_map[(x+1)%WIN_WIDTH][(y-1)].type != WATER && prov_map[(x+1)%WIN_WIDTH][(y-1)].num_prov != 0)
-            num = prov_map[(x+1)%WIN_WIDTH][(y-1)].num_prov;
-        if(prov_map[(x+1)%WIN_WIDTH][y].type != WATER && prov_map[(x+1)%WIN_WIDTH][y].num_prov != 0)
-            num = prov_map[(x+1)%WIN_WIDTH][y].num_prov;
-        if(prov_map[(x+1)%WIN_WIDTH][(y+1)].type != WATER && prov_map[(x+1)%WIN_WIDTH][(y+1)].num_prov != 0)
-            num = prov_map[(x+1)%WIN_WIDTH][(y+1)].num_prov;
-    }
-    else {
-        if(prov_map[(x-1)%WIN_WIDTH][(y-1)].type != WATER && prov_map[(x-1)%WIN_WIDTH][(y-1)].num_prov != 0)
-            num = prov_map[(x-1)%WIN_WIDTH][(y-1)].num_prov;
-        if(prov_map[(x-1)%WIN_WIDTH][y].type != WATER && prov_map[(x-1)%WIN_WIDTH][y].num_prov != 0)
-            num = prov_map[(x-1)%WIN_WIDTH][y].num_prov;
-        if(prov_map[(x-1)%WIN_WIDTH][(y+1)].type != WATER && prov_map[(x-1)%WIN_WIDTH][(y+1)].num_prov != 0)
-            num = prov_map[(x-1)%WIN_WIDTH][(y+1)].num_prov;
-        if(prov_map[x%WIN_WIDTH][(y-1)].type != WATER && prov_map[x%WIN_WIDTH][(y-1)].num_prov != 0)
-            num = prov_map[x%WIN_WIDTH][(y-1)].num_prov;
-        if(prov_map[x%WIN_WIDTH][(y+1)].type != WATER && prov_map[x%WIN_WIDTH][(y+1)].num_prov != 0)
-            num = prov_map[x%WIN_WIDTH][(y+1)].num_prov;
-        if(prov_map[(x+1)%WIN_WIDTH][(y-1)].type != WATER && prov_map[(x+1)%WIN_WIDTH][(y-1)].num_prov != 0)
-            num = prov_map[(x+1)%WIN_WIDTH][(y-1)].num_prov;
-        if(prov_map[(x+1)%WIN_WIDTH][y].type != WATER && prov_map[(x+1)%WIN_WIDTH][y].num_prov != 0)
-            num = prov_map[(x+1)%WIN_WIDTH][y].num_prov;
-        if(prov_map[(x+1)%WIN_WIDTH][(y+1)].type != WATER && prov_map[(x+1)%WIN_WIDTH][(y+1)].num_prov != 0)
-            num = prov_map[(x+1)%WIN_WIDTH][(y+1)].num_prov;
-    }
-    return num;
 }
 
 
@@ -148,21 +74,13 @@ std::vector<Province> Map_cut::provinces_generation(noise::utils::NoiseMap heigh
 
         for (auto& rp : iterationResult.newRegionPoints)
             prov_map[rp.x][rp.y].num_prov = rp.id;
-
-        /*for(x=0; x < WIN_WIDTH; x++) {
-            for(y=0; y < WIN_HEIGHT; y++) {
-                if(prov_map[x][y].type != WATER && prov_map[x][y].num_prov == 0) {
-                    num = explore(x, y);
-                    if(num != 0) {
-                        prov_map[x][y].num_prov = num;
-                        flag = false;
-                    }
-                }
-            }
-        }*/
         cpt++;
         std::cout << "Iteration n." << cpt << std::endl;
     }
+
+
+    ///Completing the remaining earth
+    /// TODO ///
 
     std::cout << "Provinces generation done" << std::endl;
     return this->all_provinces;

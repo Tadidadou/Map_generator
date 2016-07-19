@@ -18,7 +18,7 @@ int main() {
     win.draw(earth);
     win.display();
 
-    Map_cut map_cut(earth, 200);
+    Map_cut map_cut(earth, 500);
     all_provinces = map_cut.provinces_generation(generator.GetHeightMap(), generator.GetEarth_percent());
 
      for(int y=0; y < WIN_HEIGHT; y++) {
@@ -31,9 +31,16 @@ int main() {
         }
     }
 
+    int offsetX = 0;
+    double zoom = 1;
+    sf::Vector2i clicPos;
 
+    sf::Transform slide;
 
     while(win.isOpen()) {
+        sf::Vector2i localPosition = sf::Mouse::getPosition(win);
+        sf::Transform loopSlide;
+
         sf::Event event;
         while(win.pollEvent(event)) {
             ///Events management
@@ -44,15 +51,60 @@ int main() {
                     break;
                 ///One mouse button pressed
                 case sf::Event::MouseButtonPressed:
-
+                    clicPos = localPosition;
                     break;
+                case sf::Event::MouseWheelScrolled:
+                {
+                    double zm = 1+event.mouseWheelScroll.delta/10.0;
+                    zoom *= zm;
+                    slide.scale(zm, zm);
+                    //std::cout << zoom << std::endl;
+                    break;
+                }
                 default:
                     break;
             }
         }
 
+        //loopSlide.scale(zoom, zoom);
+
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+        {
+            int move = localPosition.x-clicPos.x;
+            int moveY = localPosition.y-clicPos.y;
+
+            offsetX += move/zoom;
+
+            if (offsetX > WIN_WIDTH)
+            {
+                offsetX -= WIN_WIDTH;
+                slide.translate(sf::Vector2f(-WIN_WIDTH, 0));
+            }
+            else if (offsetX <= -WIN_WIDTH)
+            {
+                offsetX += WIN_WIDTH;
+                slide.translate(sf::Vector2f(WIN_WIDTH, 0));
+            }
+
+            slide.translate(sf::Vector2f(move/zoom, moveY/zoom));
+
+            clicPos = localPosition;
+
+            std::cout << offsetX << std::endl;
+        }
+
+        loopSlide = slide;
+
+        if (offsetX > 0)
+            loopSlide.translate(sf::Vector2f(-WIN_WIDTH, 0));
+        else
+            loopSlide.translate(sf::Vector2f(WIN_WIDTH, 0));
+
         win.clear();
-        win.draw(earth);
+
+        win.draw(earth, slide);
+        win.draw(earth, loopSlide);
+
         win.display();
     }
     return 0;

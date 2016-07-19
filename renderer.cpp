@@ -265,10 +265,12 @@ sf::VertexArray RendererVertex::Render ()
 
       //Fill the vertex array
       m_pDestVertexArray[i].position = sf::Vector2f(x, y);
+
       color.r = pDest->red;
       color.g = pDest->green;
       color.b = pDest->blue;
       m_pDestVertexArray[i].color = color;
+
 
       // Go to the next point.
       ++pSource;
