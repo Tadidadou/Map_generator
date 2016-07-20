@@ -18,7 +18,7 @@ int main() {
     win.draw(earth);
     win.display();
 
-    Map_cut map_cut(earth, 500);
+    Map_cut map_cut(earth, 1000);
     all_provinces = map_cut.provinces_generation(generator.GetHeightMap(), generator.GetEarth_percent());
 
      for(int y=0; y < WIN_HEIGHT; y++) {
