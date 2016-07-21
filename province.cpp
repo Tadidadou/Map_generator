@@ -1,23 +1,33 @@
 #include "province.hpp"
 
 
-Province::Province(sf::VertexArray province_m, int id) {
+Province::Province(coord_terrain pixel, int id) {
     this->id = id;
-    this->province_map = province_m;
-    srand(time(0));
+    this->coords.push_back(pixel);
     this->color.r = rand()%255;
     this->color.g = rand()%255;
     this->color.b = rand()%255;
-    this->name = "Ouarzazate";
+    this->name = search_name();
 }
 
 
 Province::~Province() {
-    std::cout << "Province has been one-shot" << std::endl;
+    //Nothing to do and I don't write a cout because it's called a very amount of times
 }
 
 
-///Add a vertex to an existing province
-void Province::add_vertex(sf::Vertex vertice) {
-    this->province_map.append(vertice);
+///Return a random name from a file
+std::string Province::search_name() {
+    int line;
+    std::string name = "";
+
+    line = rand();
+
+    int i = 0;
+    std::ifstream file("utils/name_list.txt");
+    while (getline(file, name) && i < line)
+    {
+        i++;
+    }
+    return name;
 }

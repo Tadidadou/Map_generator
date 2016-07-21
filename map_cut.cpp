@@ -15,9 +15,76 @@ Map_cut::~Map_cut() {
 }
 
 
+///Generating the vertex array of the provinces
+sf::VertexArray Map_cut::generate_vertex_prov_map() {
+    int x = 0;
+    int y = 0;
+    vertex_prov_map = sf::VertexArray(sf::Points, WIN_WIDTH * WIN_HEIGHT);
+
+    for(unsigned int i=0; i < WIN_WIDTH * WIN_HEIGHT; i++) {
+        vertex_prov_map[i].position = sf::Vector2f(x, y);
+        if(prov_map[x][y].type != WATER)
+            vertex_prov_map[i].color = all_provinces[prov_map[x][y].num_prov].GetColor();
+        else
+            vertex_prov_map[i].color = earth_map[i].color;
+
+        x++;
+        if(x == WIN_WIDTH) {
+            y++;
+            x = 0;
+        }
+    }
+
+    return vertex_prov_map;
+}
+
+
+///Return true if the pixel is on a boarder between provinces
+bool Map_cut::isBorder(int x, int y) {
+    if(y != 0) {
+        if(prov_map[x][y].num_prov != prov_map[x][y-1].num_prov)
+            return true;
+    }
+    if(y != WIN_HEIGHT - 1) {
+        if(prov_map[x][y].num_prov != prov_map[x][y+1].num_prov)
+            return true;
+    }
+    if(prov_map[x][y].num_prov != prov_map[(x-1)%WIN_WIDTH][y-1].num_prov)
+        return true;
+    else if(prov_map[x][y].num_prov != prov_map[(x+1)%WIN_WIDTH][y+1].num_prov)
+        return true;
+    else
+        return false;
+}
+
+
+///Generating the vertex array of the naked map with boarders
+sf::VertexArray Map_cut::generate_vertex_prov_borders_map() {
+    int x = 0;
+    int y = 0;
+    vertex_prov_borders_map = sf::VertexArray(sf::Points, WIN_WIDTH * WIN_HEIGHT);
+
+    for(unsigned int i=0; i < WIN_WIDTH * WIN_HEIGHT; i++) {
+        vertex_prov_borders_map[i].position = sf::Vector2f(x, y);
+        if(prov_map[x][y].type != WATER && isBorder(x, y))
+            vertex_prov_borders_map[i].color = sf::Color(0, 0, 0);
+        else
+            vertex_prov_borders_map[i].color = earth_map[i].color;
+
+        x++;
+        if(x == WIN_WIDTH) {
+            y++;
+            x = 0;
+        }
+    }
+
+    return vertex_prov_borders_map;
+}
+
+
 ///Generating the provinces_map
-void Map_cut::prov_map_generation(noise::utils::NoiseMap heightMap, float earth_percent) {
-    float earth, grass, dirt, hill, mountain;
+int Map_cut::prov_map_generation(noise::utils::NoiseMap heightMap, float earth_percent) {
+    float earth, dirt, hill, mountain;
     int x, y;
     x = 0;
     y = 0;
@@ -44,48 +111,60 @@ void Map_cut::prov_map_generation(noise::utils::NoiseMap heightMap, float earth_
             prov_map[x][y].num_prov = 0;
         }
     }
+    return prov_map.size();
 }
 
 
 ///Generating all the province
 std::vector<Province> Map_cut::provinces_generation(noise::utils::NoiseMap heightMap, float earth_percent) {
-    int i, x, y, nb, n_loop, remaining_earth;
+    int i, x, y, nb, remaining_earth, n_loop, cpt, total_earth;
     bool changes = true;
     IterationResult iterationResult;
     srand(time(0));
 
-    prov_map_generation(heightMap, earth_percent);
+    ///Calculating the number of earth pixel
+    total_earth = prov_map_generation(heightMap, earth_percent);
 
-    n_loop = 0;
-    nb = nb_prov;
+
     ///Creating the provinces
+    n_loop = 0;
+    cpt = 0;
+    nb = nb_prov;
+    std::cout << "Province generation...  ";
     while(changes) {
         n_loop++;
         remaining_earth = 0;
-        std::cout << "Loop n." << n_loop << std::endl;
-        changes = false;
+
         ///Choosing the first pixel of each province
         for(i=0; i < nb; i++) {
             x = rand()%WIN_WIDTH;
             y = rand()%WIN_HEIGHT;
             if(prov_map[x][y].type != WATER && prov_map[x][y].num_prov == 0) {
                 prov_map[x][y].num_prov = i + 1;
-                std::cout << "i = " << i << std::endl;
+
+                coord_terrain pixel;
+                pixel.coord = sf::Vector2f(x, y);
+                pixel.type = prov_map[x][y].type;
+                all_provinces.push_back(Province(pixel, i + 1));
             }
             else
                 i--;
         }
 
-        int cpt = 0;
         ///Adding every earth pixel to a province
         iterationResult.changes = 1;
         while(iterationResult.changes != 0) {
             iterationResult = connexity(prov_map, 50);
 
-            for (auto& rp : iterationResult.newRegionPoints)
+            for (auto& rp : iterationResult.newRegionPoints) {
                 prov_map[rp.x][rp.y].num_prov = rp.id;
-            cpt++;
-            std::cout << "Iteration n." << cpt << std::endl;
+
+                coord_terrain pixel;
+                pixel.coord = sf::Vector2f(rp.x, rp.y);
+                pixel.type = prov_map[rp.x][rp.y].type;
+                all_provinces[rp.id-1].addPixel(pixel);
+                cpt++;
+            }
         }
 
         ///Searching remaining earth
@@ -93,16 +172,22 @@ std::vector<Province> Map_cut::provinces_generation(noise::utils::NoiseMap heigh
             for(y=0; y<WIN_HEIGHT; y++) {
                 if(prov_map[x][y].type != WATER && prov_map[x][y].num_prov == 0) {
                     remaining_earth++;
-                    changes = true;
                 }
             }
         }
-        nb = remaining_earth / 100;
-        if(nb == 0)
+
+        ///Loading indicator
+        //std::cout << " - " << (remaining_earth * 100) / total_earth << "%";
+
+        nb = remaining_earth / 1000;
+        if(nb == 0) {
             changes = false;
-        std::cout << "Remaining earth = " << remaining_earth << std::endl;
-        std::cout << "Nb = " << nb << std::endl;
+        }
     }
+    std::cout << "Number of loops : " << n_loop << std::endl;
+
+    generate_vertex_prov_map();
+    generate_vertex_prov_borders_map();
 
     std::cout << "Provinces generation done" << std::endl;
     return this->all_provinces;

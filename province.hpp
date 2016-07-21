@@ -2,14 +2,15 @@
 #include <iostream>
 #include <stdio.h>
 #include <SFML/Graphics.hpp>
+#include <vector>
 #include <string>
+#include <fstream>
+#include "constants.hpp"
 
 class Province {
 public:
-    Province(sf::VertexArray, int);
+    Province(coord_terrain pixel, int);
     ~Province();
-
-    void add_vertex(sf::Vertex);
 
     std::string GetName() {
         return this->name;
@@ -23,10 +24,16 @@ public:
     void SetName(std::string new_name) {
         this->name = new_name;
     }
+    void addPixel(coord_terrain pixel) {
+        this->coords.push_back(pixel);
+    }
+
 
 private:
+    std::string search_name();
+
     int id;
     std::string name;
     sf::Color color;
-    sf::VertexArray province_map;
+    std::vector<coord_terrain> coords;
 };

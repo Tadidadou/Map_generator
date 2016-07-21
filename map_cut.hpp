@@ -16,25 +16,33 @@ public:
 
     std::vector<Province> provinces_generation(noise::utils::NoiseMap, float);
     std::vector<Continent> continents_generation();
-    sf::VertexArray draw_provinces();
-    sf::VertexArray draw_continents();
+    void draw_continents(sf::RenderWindow&);
 
+    sf::VertexArray GetProvincesMap() {
+        return this->vertex_prov_map;
+    }
+    sf::VertexArray GetProvincesBordersMap() {
+        return this->vertex_prov_borders_map;
+    }
     std::vector<Province> GetProvinces() {
         return this->all_provinces;
     }
     std::vector<Continent> GetContinents() {
         return this->all_continents;
     }
-    std::vector<std::vector<provinces_map>> prov_map;
 
 private:
+    bool isBorder(int, int);
     Province new_province(int, sf::VertexArray);
-    void prov_map_generation(noise::utils::NoiseMap, float);
-    int explore(int, int);
+    int prov_map_generation(noise::utils::NoiseMap, float);
+    sf::VertexArray generate_vertex_prov_map();
+    sf::VertexArray generate_vertex_prov_borders_map();
 
     int nb_prov;
-
+    std::vector<std::vector<provinces_map>> prov_map;
     std::vector<Province> all_provinces;
     std::vector<Continent> all_continents;
     sf::VertexArray earth_map;
+    sf::VertexArray vertex_prov_map;
+    sf::VertexArray vertex_prov_borders_map;
 };

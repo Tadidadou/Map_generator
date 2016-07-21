@@ -18,24 +18,15 @@ int main() {
     win.draw(earth);
     win.display();
 
-    Map_cut map_cut(earth, 1000);
+    Map_cut map_cut(earth, 2000);
     all_provinces = map_cut.provinces_generation(generator.GetHeightMap(), generator.GetEarth_percent());
-
-     for(int y=0; y < WIN_HEIGHT; y++) {
-        for(int x=0; x < WIN_WIDTH; x++) {
-            if(map_cut.prov_map[x][y].num_prov) {
-                srand(map_cut.prov_map[x][y].num_prov);
-                earth[y * WIN_WIDTH + x].position = sf::Vector2f(x, y);
-                earth[y * WIN_WIDTH + x].color = sf::Color(rand()%255, rand()%255, rand()%255);
-            }
-        }
-    }
 
     int offsetX = 0;
     double zoom = 1;
     sf::Vector2i clicPos;
 
     sf::Transform slide;
+    int mode = 0;
 
     while(win.isOpen()) {
         sf::Vector2i localPosition = sf::Mouse::getPosition(win);
@@ -58,9 +49,16 @@ int main() {
                     double zm = 1+event.mouseWheelScroll.delta/10.0;
                     zoom *= zm;
                     slide.scale(zm, zm);
-                    //std::cout << zoom << std::endl;
                     break;
                 }
+                case sf::Event::KeyPressed:
+                    if(event.key.code == sf::Keyboard::Num1)
+                        mode = 0;
+                    if(event.key.code == sf::Keyboard::Num2)
+                        mode = 1;
+                    if(event.key.code == sf::Keyboard::Num3)
+                        mode = 2;
+                    break;
                 default:
                     break;
             }
@@ -68,7 +66,7 @@ int main() {
 
         //loopSlide.scale(zoom, zoom);
 
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
         {
             int move = localPosition.x-clicPos.x;
             int moveY = localPosition.y-clicPos.y;
@@ -89,8 +87,6 @@ int main() {
             slide.translate(sf::Vector2f(move/zoom, moveY/zoom));
 
             clicPos = localPosition;
-
-            std::cout << offsetX << std::endl;
         }
 
         loopSlide = slide;
@@ -102,8 +98,18 @@ int main() {
 
         win.clear();
 
-        win.draw(earth, slide);
-        win.draw(earth, loopSlide);
+        if(mode == 1) {
+            win.draw(map_cut.GetProvincesBordersMap(), slide);
+            win.draw(map_cut.GetProvincesBordersMap(), loopSlide);
+        }
+        else if(mode == 2) {
+            win.draw(map_cut.GetProvincesMap(), slide);
+            win.draw(map_cut.GetProvincesMap(), loopSlide);
+        }
+        else {
+            win.draw(earth, slide);
+            win.draw(earth, loopSlide);
+        }
 
         win.display();
     }
