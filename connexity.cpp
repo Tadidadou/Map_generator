@@ -1,17 +1,6 @@
 #include "connexity.hpp"
 #include <iostream>
 
-///New definition of mod (normal one doesn't work with negative numbers)
-int mod(int a, int b) {
-    if(a >= b)
-        return a - b;
-    else if(a < 0)
-        return a + b;
-    else
-        return a;
-}
-
-
 IterationResult connexity(std::vector<std::vector<provinces_map>> pMap, int sharpness)
 {
     IterationResult result;

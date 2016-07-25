@@ -21,6 +21,9 @@ public:
     int GetId() {
         return this->id;
     }
+    terrain_type GetType() {
+        return this->type;
+    }
     void SetName(std::string new_name) {
         this->name = new_name;
     }
@@ -29,9 +32,11 @@ public:
     }
 
 
+    void determine_type();
+
 private:
     std::string search_name();
-
+    terrain_type type;
     int id;
     std::string name;
     sf::Color color;

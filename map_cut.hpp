@@ -17,6 +17,7 @@ public:
     std::vector<Province> provinces_generation(noise::utils::NoiseMap, float);
     std::vector<Continent> continents_generation();
     void draw_continents(sf::RenderWindow&);
+    sf::VertexArray show_specified_province(int);
 
     sf::VertexArray GetProvincesMap() {
         return this->vertex_prov_map;
@@ -29,6 +30,9 @@ public:
     }
     std::vector<Continent> GetContinents() {
         return this->all_continents;
+    }
+    int GetSelectedProvId(int x, int y) {
+        return this->prov_map[x][y].num_prov;
     }
 
 private:

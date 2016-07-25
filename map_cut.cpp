@@ -82,6 +82,30 @@ sf::VertexArray Map_cut::generate_vertex_prov_borders_map() {
 }
 
 
+///Return the vertex array to show only one province, specified by user
+sf::VertexArray Map_cut::show_specified_province(int id_prov) {
+    int x = 0;
+    int y = 0;
+    sf::VertexArray result_map(sf::Points, WIN_WIDTH * WIN_HEIGHT);
+
+    for(unsigned int i=0; i < WIN_WIDTH * WIN_HEIGHT; i++) {
+        result_map[i].position = sf::Vector2f(x, y);
+        if(prov_map[x][y].num_prov == id_prov)
+            result_map[i].color = all_provinces[prov_map[x][y].num_prov].GetColor();
+        else
+            result_map[i].color = earth_map[i].color;
+
+        x++;
+        if(x == WIN_WIDTH) {
+            y++;
+            x = 0;
+        }
+    }
+
+    return result_map;
+}
+
+
 ///Generating the provinces_map
 int Map_cut::prov_map_generation(noise::utils::NoiseMap heightMap, float earth_percent) {
     float earth, dirt, hill, mountain;
@@ -130,22 +154,23 @@ std::vector<Province> Map_cut::provinces_generation(noise::utils::NoiseMap heigh
     n_loop = 0;
     cpt = 0;
     nb = nb_prov;
+    int num_province = 1;
     std::cout << "Province generation...  ";
     while(changes) {
         n_loop++;
         remaining_earth = 0;
 
         ///Choosing the first pixel of each province
-        for(i=0; i < nb; i++) {
+        for(i = 0; i < nb; i++) {
             x = rand()%WIN_WIDTH;
             y = rand()%WIN_HEIGHT;
             if(prov_map[x][y].type != WATER && prov_map[x][y].num_prov == 0) {
-                prov_map[x][y].num_prov = i + 1;
+                prov_map[x][y].num_prov = num_province;
 
                 coord_terrain pixel;
                 pixel.coord = sf::Vector2f(x, y);
                 pixel.type = prov_map[x][y].type;
-                all_provinces.push_back(Province(pixel, i + 1));
+                all_provinces.push_back(Province(pixel, num_province++));
             }
             else
                 i--;
@@ -177,15 +202,18 @@ std::vector<Province> Map_cut::provinces_generation(noise::utils::NoiseMap heigh
         }
 
         ///Loading indicator
-        //std::cout << " - " << (remaining_earth * 100) / total_earth << "%";
+        std::cout << " - " << ((((float) remaining_earth / (float) total_earth) * 100.0) - 100) * (-1) << "%";
 
         nb = remaining_earth / 1000;
         if(nb == 0) {
             changes = false;
         }
     }
-    std::cout << "Number of loops : " << n_loop << std::endl;
+    std::cout << std::endl << "Number of loops : " << n_loop << std::endl;
 
+    for(i = 0; i < all_provinces.size(); i++) {
+        all_provinces[i].determine_type();
+    }
     generate_vertex_prov_map();
     generate_vertex_prov_borders_map();
 

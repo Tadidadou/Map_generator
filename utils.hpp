@@ -22,4 +22,6 @@ struct IterationResult
     void addRP(int x, int y, int id);
 };
 
+int mod(int, int);
+
 #endif // UTILS_HPP_INCLUDED

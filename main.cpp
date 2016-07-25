@@ -2,6 +2,7 @@
 #include "province.hpp"
 #include "generator.hpp"
 #include "constants.hpp"
+#include "utils.hpp"
 
 using namespace std;
 
@@ -27,6 +28,7 @@ int main() {
 
     sf::Transform slide;
     int mode = 0;
+    int id_prov;
 
     while(win.isOpen()) {
         sf::Vector2i localPosition = sf::Mouse::getPosition(win);
@@ -43,7 +45,25 @@ int main() {
                 ///One mouse button pressed
                 case sf::Event::MouseButtonPressed:
                     clicPos = localPosition;
+                    if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+                    {
+                        int id = map_cut.GetSelectedProvId(mod((clicPos.x - offsetX), WIN_WIDTH), clicPos.y); //TODO : - offsetY
+                        if(id != 0) {
+                            Province prov = map_cut.GetProvinces()[id-1];
+                            string type;
+                            if(prov.GetType() == GRASS)
+                                type = "Grass";
+                            else if(prov.GetType() == DIRT)
+                                type = "Dirt";
+                            else if(prov.GetType() == HILL)
+                                type = "Hill";
+                            else if(prov.GetType() == MOUNTAIN)
+                                type = "Mountain";
+                            cout << "Province clicked : id = " << prov.GetId() << ", name = " << prov.GetName() << ", type = " << type << endl;
+                        }
+                    }
                     break;
+                ///On scroll
                 case sf::Event::MouseWheelScrolled:
                 {
                     double zm = 1+event.mouseWheelScroll.delta/10.0;
@@ -58,13 +78,16 @@ int main() {
                         mode = 1;
                     if(event.key.code == sf::Keyboard::Num3)
                         mode = 2;
+                    if(event.key.code == sf::Keyboard::Num4) {
+                        cout << "Please indicate the id of the province you are looking for :" << endl;
+                        cin >> id_prov;
+                        mode = 3;
+                    }
                     break;
                 default:
                     break;
             }
         }
-
-        //loopSlide.scale(zoom, zoom);
 
         if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
         {
@@ -105,6 +128,10 @@ int main() {
         else if(mode == 2) {
             win.draw(map_cut.GetProvincesMap(), slide);
             win.draw(map_cut.GetProvincesMap(), loopSlide);
+        }
+        else if(mode == 3) {
+            win.draw(map_cut.show_specified_province(id_prov), slide);
+            win.draw(map_cut.show_specified_province(id_prov), loopSlide);
         }
         else {
             win.draw(earth, slide);

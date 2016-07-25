@@ -12,7 +12,7 @@ Province::Province(coord_terrain pixel, int id) {
 
 
 Province::~Province() {
-    //Nothing to do and I don't write a cout because it's called a very amount of times
+    //Nothing to do and I don't write a cout because it's called a very big amount of times in a row
 }
 
 
@@ -30,4 +30,51 @@ std::string Province::search_name() {
         i++;
     }
     return name;
+}
+
+
+void Province::determine_type() {
+    int cpt_grass = 0;
+    int cpt_dirt = 0;
+    int cpt_hill = 0;
+    int cpt_mountain = 0;
+    terrain_type intermed1, intermed2;
+    for (int i = 0; i < coords.size(); i++) {
+        if(coords[i].type == GRASS)
+            cpt_grass++;
+        else if(coords[i].type == DIRT)
+            cpt_dirt++;
+        else if(coords[i].type == HILL)
+            cpt_hill++;
+        else if(coords[i].type == MOUNTAIN)
+            cpt_mountain++;
+    }
+    if(cpt_grass > cpt_dirt) {
+        if(cpt_grass > cpt_hill) {
+            if(cpt_grass > cpt_mountain)
+                type = GRASS;
+            else
+                type = MOUNTAIN;
+        }
+        else {
+            if(cpt_hill > cpt_mountain)
+                type = HILL;
+            else
+                type = MOUNTAIN;
+        }
+    }
+    else {
+        if(cpt_dirt > cpt_hill) {
+            if(cpt_dirt > cpt_mountain)
+                type = DIRT;
+            else
+                type = MOUNTAIN;
+        }
+        else {
+            if(cpt_hill > cpt_mountain)
+                type = HILL;
+            else
+                type = MOUNTAIN;
+        }
+    }
 }
