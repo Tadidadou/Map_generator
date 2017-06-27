@@ -78,3 +78,17 @@ void Province::determine_type() {
         }
     }
 }
+
+
+void Province::determine_gc() {
+    int sum_x = 0;
+    int sum_y = 0;
+
+    for(int i = 0; i < coords.size(); i++) {
+        sum_x += coords[i].coord.x;
+        sum_y += coords[i].coord.y;
+    }
+
+    this->gc.x = sum_x / coords.size();
+    this->gc.y = sum_y / coords.size();
+}

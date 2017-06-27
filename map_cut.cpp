@@ -39,7 +39,7 @@ sf::VertexArray Map_cut::generate_vertex_prov_map() {
 }
 
 
-///Return true if the pixel is on a boarder between provinces
+/// Return true if the pixel is on a boarder between provinces
 bool Map_cut::isBorder(int x, int y) {
     if(y != 0) {
         if(prov_map[x][y].num_prov != prov_map[x][y-1].num_prov)
@@ -49,23 +49,41 @@ bool Map_cut::isBorder(int x, int y) {
         if(prov_map[x][y].num_prov != prov_map[x][y+1].num_prov)
             return true;
     }
-    if(prov_map[x][y].num_prov != prov_map[(x-1)%WIN_WIDTH][y-1].num_prov)
+    if(x == 0) {
+        if(prov_map[x][y].num_prov != prov_map[WIN_WIDTH-1][y].num_prov)
+            return true;
+    }
+    // Problem with the modulo operation : seems like (-1 mod WIN_WIDTH) == -1 ==> bug
+    /*if(prov_map[x][y].num_prov != prov_map[(x-1)%WIN_WIDTH][y].num_prov)
+            return true;*/
+    if(prov_map[x][y].num_prov != prov_map[(x+1)%WIN_WIDTH][y].num_prov)
         return true;
-    else if(prov_map[x][y].num_prov != prov_map[(x+1)%WIN_WIDTH][y+1].num_prov)
-        return true;
-    else
-        return false;
+
+    return false;
 }
 
 
-///Generating the vertex array of the naked map with boarders
+/// Return true if the pixel is the center of gravity of the province - debug use
+bool Map_cut::isGc(int x, int y) {
+    int id = prov_map[x][y].num_prov;
+    if((x == all_provinces[id].GetGc().x) && (y == all_provinces[id].GetGc().y)){
+        std::cout << "GC found !" << std::endl;
+        return true;
+    }
+
+    return false;
+}
+
+
+/// Generating the vertex array of the naked map with boarders
 sf::VertexArray Map_cut::generate_vertex_prov_borders_map() {
     int x = 0;
     int y = 0;
     vertex_prov_borders_map = sf::VertexArray(sf::Points, WIN_WIDTH * WIN_HEIGHT);
 
-    for(unsigned int i=0; i < WIN_WIDTH * WIN_HEIGHT; i++) {
+    for(int i=0; i < WIN_WIDTH * WIN_HEIGHT; i++) {
         vertex_prov_borders_map[i].position = sf::Vector2f(x, y);
+
         if(prov_map[x][y].type != WATER && isBorder(x, y))
             vertex_prov_borders_map[i].color = sf::Color(0, 0, 0);
         else
@@ -201,8 +219,8 @@ std::vector<Province> Map_cut::provinces_generation(noise::utils::NoiseMap heigh
             }
         }
 
-        ///Loading indicator
-        std::cout << " - " << ((((float) remaining_earth / (float) total_earth) * 100.0) - 100) * (-1) << "%";
+        //Loading indicator
+        //std::cout << " - " << ((((float) remaining_earth / (float) total_earth) * 100.0) - 100) * (-1) << "%";
 
         nb = remaining_earth / 1000;
         if(nb == 0) {
@@ -213,6 +231,7 @@ std::vector<Province> Map_cut::provinces_generation(noise::utils::NoiseMap heigh
 
     for(i = 0; i < all_provinces.size(); i++) {
         all_provinces[i].determine_type();
+        all_provinces[i].determine_gc();
     }
     generate_vertex_prov_map();
     generate_vertex_prov_borders_map();

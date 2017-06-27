@@ -34,10 +34,10 @@ sf::VertexArray Generator::terrain_rendering(sf::VertexArray earth_map) {
     ///Calculating the values of the gradient color
     shore = 1 - ((earth_percent / 100) * 2);
     shallow = shore - (0.2500 * (earth_percent / 100) * 2);
-    sand = shore + (0.02250 * (earth_percent / 100) * 2);
+    sand = shore + (0.01125 * (earth_percent / 100) * 2);
     coast = shore + (0.0750 * (earth_percent / 100) * 2);
-    grass = shore + (0.1250 * (earth_percent / 100) * 2);
-    dirt = shore + (0.2000 * (earth_percent / 100) * 2);
+    grass = shore + (0.2000 * (earth_percent / 100) * 2);
+    dirt = shore + (0.4000 * (earth_percent / 100) * 2);
     hill = shore + (0.5000 * (earth_percent / 100) * 2);
     rock = shore + (0.7500 * (earth_percent / 100) * 2);
     std::cout << "shallow = " << shallow << std::endl;
@@ -45,19 +45,20 @@ sf::VertexArray Generator::terrain_rendering(sf::VertexArray earth_map) {
     std::cout << "sand = " << sand << std::endl;
     std::cout << "grass = " << grass << std::endl;
     std::cout << "dirt = " << dirt << std::endl;
+    std::cout << "hill = " << hill << std::endl;
     std::cout << "rock = " << rock << std::endl;
 
     ///Generating the image and the vertex array
     renderer.SetSourceNoiseMap(heightMap);
     renderer.SetDestImage(image);
     renderer.ClearGradient();
-    renderer.AddGradientPoint(-1.0000, noise::utils::Color(0, 0, 128, 255)); // deeps
+    renderer.AddGradientPoint(-1.0000, noise::utils::Color(4, 4, 179, 255)); // deeps
     renderer.AddGradientPoint(shallow, noise::utils::Color(0, 0, 255, 255)); // shallow
-    renderer.AddGradientPoint(shore, noise::utils::Color(0, 128, 255, 255)); // shore
-    renderer.AddGradientPoint(sand, noise::utils::Color(240, 240, 64, 255)); // sand
-    renderer.AddGradientPoint(coast, noise ::utils::Color(93, 196, 70, 255)); // coast
-    renderer.AddGradientPoint(grass, noise::utils::Color(100, 190, 0, 255)); // grass
-    renderer.AddGradientPoint(dirt, noise::utils::Color(149, 213, 17, 255)); // dirt
+    renderer.AddGradientPoint(shore, noise::utils::Color(21, 155, 236, 255)); // shore
+    renderer.AddGradientPoint(sand, noise::utils::Color(228, 219, 29, 255)); // sand
+    renderer.AddGradientPoint(coast, noise ::utils::Color(79, 186, 48, 255)); // coast
+    renderer.AddGradientPoint(grass, noise::utils::Color(47, 136, 43, 255)); // grass
+    renderer.AddGradientPoint(dirt, noise::utils::Color(147, 130, 32, 255)); // dirt
     renderer.AddGradientPoint(hill, noise::utils::Color(224, 224, 150, 255)); // hill
     renderer.AddGradientPoint(rock, noise::utils::Color(128, 128, 128, 255)); // rock
     renderer.AddGradientPoint(1.0000, noise::utils::Color(255, 255, 255, 255)); // snow

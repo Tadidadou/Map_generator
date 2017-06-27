@@ -19,7 +19,7 @@ int main() {
     win.draw(earth);
     win.display();
 
-    Map_cut map_cut(earth, 2000);
+    Map_cut map_cut(earth, 1000);
     all_provinces = map_cut.provinces_generation(generator.GetHeightMap(), generator.GetEarth_percent());
 
     int offsetX = 0;
@@ -48,6 +48,7 @@ int main() {
                     if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
                     {
                         int id = map_cut.GetSelectedProvId(mod((clicPos.x - offsetX), WIN_WIDTH), clicPos.y); //TODO : - offsetY
+                        // On click on a province
                         if(id != 0) {
                             Province prov = map_cut.GetProvinces()[id-1];
                             string type;
@@ -60,6 +61,7 @@ int main() {
                             else if(prov.GetType() == MOUNTAIN)
                                 type = "Mountain";
                             cout << "Province clicked : id = " << prov.GetId() << ", name = " << prov.GetName() << ", type = " << type << endl;
+                            cout << "Gravity center at : " << prov.GetGc().x << " - " << prov.GetGc().y << endl;
                         }
                     }
                     break;

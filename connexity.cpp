@@ -1,7 +1,7 @@
 #include "connexity.hpp"
 #include <iostream>
 
-IterationResult connexity(std::vector<std::vector<provinces_map>> pMap, int sharpness)
+IterationResult connexity(std::vector<std::vector<provinces_map> > pMap, int sharpness)
 {
     IterationResult result;
     for (int x=0; x < WIN_WIDTH; ++x)

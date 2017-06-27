@@ -21,8 +21,14 @@ public:
     int GetId() {
         return this->id;
     }
+    std::vector<coord_terrain> GetCoords() {
+        return this->coords;
+    }
     terrain_type GetType() {
         return this->type;
+    }
+    sf::Vector2i GetGc() {
+        return this->gc;
     }
     void SetName(std::string new_name) {
         this->name = new_name;
@@ -33,6 +39,8 @@ public:
 
 
     void determine_type();
+    void determine_gc();
+    void determine_neihbours(std::vector<std::vector<provinces_map> >);
 
 private:
     std::string search_name();
@@ -41,4 +49,6 @@ private:
     std::string name;
     sf::Color color;
     std::vector<coord_terrain> coords;
+    sf::Vector2i gc;
+    std::vector<int> neighbours;
 };

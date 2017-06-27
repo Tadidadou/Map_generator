@@ -37,13 +37,14 @@ public:
 
 private:
     bool isBorder(int, int);
+    bool isGc(int, int);
     Province new_province(int, sf::VertexArray);
     int prov_map_generation(noise::utils::NoiseMap, float);
     sf::VertexArray generate_vertex_prov_map();
     sf::VertexArray generate_vertex_prov_borders_map();
 
     int nb_prov;
-    std::vector<std::vector<provinces_map>> prov_map;
+    std::vector<std::vector<provinces_map> > prov_map;
     std::vector<Province> all_provinces;
     std::vector<Continent> all_continents;
     sf::VertexArray earth_map;
