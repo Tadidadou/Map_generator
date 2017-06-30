@@ -61,7 +61,10 @@ int main() {
                             else if(prov.GetType() == MOUNTAIN)
                                 type = "Mountain";
                             cout << "Province clicked : id = " << prov.GetId() << ", name = " << prov.GetName() << ", type = " << type << endl;
-                            cout << "Gravity center at : " << prov.GetGc().x << " - " << prov.GetGc().y << endl;
+                            cout << "Neighbours list : ";
+                            for(auto & i : prov.GetNeighbours()) {
+                                cout << "Province n°" << i.dest << " - Distance : " << i.distance << endl;
+                            }
                         }
                     }
                     break;

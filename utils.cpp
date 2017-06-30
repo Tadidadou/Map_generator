@@ -19,3 +19,8 @@ int mod(int a, int b) {
     else
         return a;
 }
+
+/// Calculates the distance between two 2D-coordinates
+float calculate_distance(sf::Vector2i a, sf::Vector2i b) {
+    return sqrt((a.x - b.x)^2 + (a.y - b.y)^2);
+}

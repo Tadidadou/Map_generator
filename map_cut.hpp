@@ -36,12 +36,13 @@ public:
     }
 
 private:
-    bool isBorder(int, int);
+    int isBorder(int, int);
     bool isGc(int, int);
     Province new_province(int, sf::VertexArray);
     int prov_map_generation(noise::utils::NoiseMap, float);
     sf::VertexArray generate_vertex_prov_map();
     sf::VertexArray generate_vertex_prov_borders_map();
+    void determine_neighbours();
 
     int nb_prov;
     std::vector<std::vector<provinces_map> > prov_map;

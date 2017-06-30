@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include "neighbour.hpp"
 #include "constants.hpp"
 
 class Province {
@@ -30,8 +31,14 @@ public:
     sf::Vector2i GetGc() {
         return this->gc;
     }
+    std::vector<Neighbour> GetNeighbours() {
+        return this->neighbours;
+    }
     void SetName(std::string new_name) {
         this->name = new_name;
+    }
+    void addNeighbour(Neighbour n) {
+        this->neighbours.push_back(n);
     }
     void addPixel(coord_terrain pixel) {
         this->coords.push_back(pixel);
@@ -50,5 +57,5 @@ private:
     sf::Color color;
     std::vector<coord_terrain> coords;
     sf::Vector2i gc;
-    std::vector<int> neighbours;
+    std::vector<Neighbour> neighbours;
 };

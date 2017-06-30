@@ -2,7 +2,9 @@
 #define UTILS_HPP_INCLUDED
 
 #include <vector>
+#include <SFML/Graphics.hpp>
 #include <cstdlib>
+#include <math.h>
 
 bool isOK(int percent);
 
@@ -23,5 +25,6 @@ struct IterationResult
 };
 
 int mod(int, int);
+float calculate_distance(sf::Vector2i, sf::Vector2i);
 
 #endif // UTILS_HPP_INCLUDED

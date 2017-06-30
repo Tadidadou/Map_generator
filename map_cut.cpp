@@ -39,27 +39,27 @@ sf::VertexArray Map_cut::generate_vertex_prov_map() {
 }
 
 
-/// Return true if the pixel is on a boarder between provinces
-bool Map_cut::isBorder(int x, int y) {
+/// If the pixel is on a boarder between provinces, return the id of the connected province
+int Map_cut::isBorder(int x, int y) {
     if(y != 0) {
         if(prov_map[x][y].num_prov != prov_map[x][y-1].num_prov)
-            return true;
+            return prov_map[x][y-1].num_prov;
     }
     if(y != WIN_HEIGHT - 1) {
         if(prov_map[x][y].num_prov != prov_map[x][y+1].num_prov)
-            return true;
+            return prov_map[x][y+1].num_prov;
     }
     if(x == 0) {
         if(prov_map[x][y].num_prov != prov_map[WIN_WIDTH-1][y].num_prov)
-            return true;
+            return prov_map[WIN_WIDTH-1][y].num_prov;
     }
     // Problem with the modulo operation : seems like (-1 mod WIN_WIDTH) == -1 ==> bug
     /*if(prov_map[x][y].num_prov != prov_map[(x-1)%WIN_WIDTH][y].num_prov)
             return true;*/
     if(prov_map[x][y].num_prov != prov_map[(x+1)%WIN_WIDTH][y].num_prov)
-        return true;
+        return prov_map[(x+1)%WIN_WIDTH][y].num_prov;
 
-    return false;
+    return -1;
 }
 
 
@@ -84,7 +84,7 @@ sf::VertexArray Map_cut::generate_vertex_prov_borders_map() {
     for(int i=0; i < WIN_WIDTH * WIN_HEIGHT; i++) {
         vertex_prov_borders_map[i].position = sf::Vector2f(x, y);
 
-        if(prov_map[x][y].type != WATER && isBorder(x, y))
+        if(prov_map[x][y].type != WATER && isBorder(x, y) > 0)
             vertex_prov_borders_map[i].color = sf::Color(0, 0, 0);
         else
             vertex_prov_borders_map[i].color = earth_map[i].color;
@@ -157,6 +157,36 @@ int Map_cut::prov_map_generation(noise::utils::NoiseMap heightMap, float earth_p
 }
 
 
+/// Determine the neighbours of each province
+void Map_cut::determine_neighbours() {
+    std::vector<coord_terrain> coords;
+    int n, id;
+    std::vector<Neighbour> current_neighbours;
+    bool flag;
+
+    for(int i=0; i < all_provinces.size(); i++) {
+        Province current_province = all_provinces[i];
+        coords = current_province.GetCoords();
+        for(int j=0; j < coords.size(); j++) {
+            if((id = isBorder(coords[j].coord.x, coords[j].coord.y)) > 0) {
+                for(int k=0; k < current_province.GetNeighbours().size(); k++) {
+                    current_neighbours = current_province.GetNeighbours();
+                    if(current_neighbours[k].dest == id)
+                        flag = true;
+                }
+                if(!flag) {
+                    Neighbour n;
+                    n.dest = id;
+                    n.distance = calculate_distance(current_province.GetGc(), all_provinces[id].GetGc());
+                    current_province.addNeighbour(n);
+                    flag = false;
+                }
+            }
+        }
+    }
+}
+
+
 ///Generating all the province
 std::vector<Province> Map_cut::provinces_generation(noise::utils::NoiseMap heightMap, float earth_percent) {
     int i, x, y, nb, remaining_earth, n_loop, cpt, total_earth;
@@ -219,9 +249,6 @@ std::vector<Province> Map_cut::provinces_generation(noise::utils::NoiseMap heigh
             }
         }
 
-        //Loading indicator
-        //std::cout << " - " << ((((float) remaining_earth / (float) total_earth) * 100.0) - 100) * (-1) << "%";
-
         nb = remaining_earth / 1000;
         if(nb == 0) {
             changes = false;
@@ -237,5 +264,9 @@ std::vector<Province> Map_cut::provinces_generation(noise::utils::NoiseMap heigh
     generate_vertex_prov_borders_map();
 
     std::cout << "Provinces generation done" << std::endl;
+
+    std::cout << "Neighbours determination..." << std::endl;
+    determine_neighbours();
+    std::cout << "Neighbours determination done" << std::endl;
     return this->all_provinces;
 }
