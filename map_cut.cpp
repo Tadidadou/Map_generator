@@ -164,22 +164,29 @@ void Map_cut::determine_neighbours() {
     std::vector<Neighbour> current_neighbours;
     bool flag;
 
-    for(int i=0; i < all_provinces.size(); i++) {
-        Province current_province = all_provinces[i];
+    std::cout << "Determining neighbours..." << std::endl;
+
+    for(int i=0; i < all_provinces.size() - 1; i++) {
+        Province current_province = all_provinces[i+1];
         coords = current_province.GetCoords();
+
         for(int j=0; j < coords.size(); j++) {
             if((id = isBorder(coords[j].coord.x, coords[j].coord.y)) > 0) {
+                current_neighbours = current_province.GetNeighbours();
+                flag = false;
+
                 for(int k=0; k < current_province.GetNeighbours().size(); k++) {
-                    current_neighbours = current_province.GetNeighbours();
-                    if(current_neighbours[k].dest == id)
+                    if(current_neighbours[k].dest == id) {
                         flag = true;
+                        break;
+                    }
                 }
+
                 if(!flag) {
                     Neighbour n;
                     n.dest = id;
                     n.distance = calculate_distance(current_province.GetGc(), all_provinces[id].GetGc());
                     current_province.addNeighbour(n);
-                    flag = false;
                 }
             }
         }

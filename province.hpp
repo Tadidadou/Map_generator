@@ -5,8 +5,8 @@
 #include <vector>
 #include <string>
 #include <fstream>
-#include "neighbour.hpp"
 #include "constants.hpp"
+#include "utils.hpp"
 
 class Province {
 public:
@@ -39,6 +39,7 @@ public:
     }
     void addNeighbour(Neighbour n) {
         this->neighbours.push_back(n);
+        std::cout << "Province number " << id << " neighbour added, province number " << n.dest << " distance " << n.distance << std::endl;
     }
     void addPixel(coord_terrain pixel) {
         this->coords.push_back(pixel);

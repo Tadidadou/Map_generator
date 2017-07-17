@@ -61,9 +61,10 @@ int main() {
                             else if(prov.GetType() == MOUNTAIN)
                                 type = "Mountain";
                             cout << "Province clicked : id = " << prov.GetId() << ", name = " << prov.GetName() << ", type = " << type << endl;
-                            cout << "Neighbours list : ";
-                            for(auto & i : prov.GetNeighbours()) {
-                                cout << "Province n°" << i.dest << " - Distance : " << i.distance << endl;
+                            vector<Neighbour> neighbours = prov.GetNeighbours();
+                            cout << "Number of neighbours : " << neighbours.size() << endl;
+                            for(int i=0; i < neighbours.size(); i++) {
+                                cout << "Neighbour : Province n°" << neighbours[i].dest << endl; //" - Distance : " << neighbours[i].distance << endl;
                             }
                         }
                     }

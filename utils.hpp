@@ -24,6 +24,13 @@ struct IterationResult
     void addRP(int x, int y, int id);
 };
 
+struct Neighbour
+{
+    int dest;
+    float distance;
+};
+
+
 int mod(int, int);
 float calculate_distance(sf::Vector2i, sf::Vector2i);
 
