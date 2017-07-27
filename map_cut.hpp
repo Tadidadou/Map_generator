@@ -42,7 +42,7 @@ private:
     int prov_map_generation(noise::utils::NoiseMap, float);
     sf::VertexArray generate_vertex_prov_map();
     sf::VertexArray generate_vertex_prov_borders_map();
-    void determine_neighbours();
+    std::vector<Neighbour> determine_neighbours(int);
 
     int nb_prov;
     std::vector<std::vector<provinces_map> > prov_map;

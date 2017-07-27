@@ -64,7 +64,7 @@ int main() {
                             vector<Neighbour> neighbours = prov.GetNeighbours();
                             cout << "Number of neighbours : " << neighbours.size() << endl;
                             for(int i=0; i < neighbours.size(); i++) {
-                                cout << "Neighbour : Province n°" << neighbours[i].dest << endl; //" - Distance : " << neighbours[i].distance << endl;
+                                cout << "Neighbour : Province n°" << neighbours[i].dest << " - Distance : " << neighbours[i].distance << endl;
                             }
                         }
                     }

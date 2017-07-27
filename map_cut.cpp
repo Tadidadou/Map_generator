@@ -158,39 +158,39 @@ int Map_cut::prov_map_generation(noise::utils::NoiseMap heightMap, float earth_p
 
 
 /// Determine the neighbours of each province
-void Map_cut::determine_neighbours() {
-    std::vector<coord_terrain> coords;
-    int n, id;
+std::vector<Neighbour> Map_cut::determine_neighbours(int id_prov) {
+    Province current_prov = all_provinces[id_prov];
+    std::vector<coord_terrain> coords = current_prov.GetCoords();
+    int destination;
     std::vector<Neighbour> current_neighbours;
     bool flag;
 
-    std::cout << "Determining neighbours..." << std::endl;
+    for(int i=0; i < coords.size(); i++) {
+        //std::cout << "Ok" << std::endl;
+        destination = isBorder(coords[i].coord.x, coords[i].coord.y);
+        if(destination > 0) {
+            flag = false;
 
-    for(int i=0; i < all_provinces.size() - 1; i++) {
-        Province current_province = all_provinces[i+1];
-        coords = current_province.GetCoords();
-
-        for(int j=0; j < coords.size(); j++) {
-            if((id = isBorder(coords[j].coord.x, coords[j].coord.y)) > 0) {
-                current_neighbours = current_province.GetNeighbours();
-                flag = false;
-
-                for(int k=0; k < current_province.GetNeighbours().size(); k++) {
-                    if(current_neighbours[k].dest == id) {
-                        flag = true;
-                        break;
-                    }
+            for(int j=0; j < current_neighbours.size(); j++) {
+                if(current_neighbours[j].dest == destination) {
+                    flag = true;
+                    break;
                 }
+            }
 
-                if(!flag) {
-                    Neighbour n;
-                    n.dest = id;
-                    n.distance = calculate_distance(current_province.GetGc(), all_provinces[id].GetGc());
-                    current_province.addNeighbour(n);
-                }
+            if(!flag) {
+                Neighbour n;
+                n.dest = destination;
+                n.distance = calculate_distance(current_prov.GetGc(), all_provinces[destination].GetGc());
+                current_neighbours.push_back(n);
             }
         }
     }
+
+    /*for(int i = 0; i < current_neighbours.size(); i++) {
+        std::cout << "Prov num " << current_neighbours[i].dest << std::endl;
+    }*/
+    return current_neighbours;
 }
 
 
@@ -273,7 +273,9 @@ std::vector<Province> Map_cut::provinces_generation(noise::utils::NoiseMap heigh
     std::cout << "Provinces generation done" << std::endl;
 
     std::cout << "Neighbours determination..." << std::endl;
-    determine_neighbours();
+    for(int i=0; i < all_provinces.size() - 1; i++) {
+        all_provinces[i+1].SetNeighbours(determine_neighbours(i+1));
+    }
     std::cout << "Neighbours determination done" << std::endl;
     return this->all_provinces;
 }

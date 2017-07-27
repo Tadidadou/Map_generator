@@ -8,6 +8,11 @@ Province::Province(coord_terrain pixel, int id) {
     this->color.g = rand()%255;
     this->color.b = rand()%255;
     this->name = search_name();
+
+    this->population = 0;
+    this->wealth = 0;
+    this->maj_culture_id = 0;
+    this->maj_religion_id = 0;
 }
 
 

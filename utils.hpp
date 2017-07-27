@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
 #include <math.h>
+#include "constants.hpp"
 
 bool isOK(int percent);
 
@@ -28,6 +29,16 @@ struct Neighbour
 {
     int dest;
     float distance;
+};
+
+struct provinces_map {
+    terrain_type type;
+    int num_prov;
+};
+
+struct coord_terrain {
+    terrain_type type;
+    sf::Vector2f coord;
 };
 
 

@@ -22,5 +22,6 @@ int mod(int a, int b) {
 
 /// Calculates the distance between two 2D-coordinates
 float calculate_distance(sf::Vector2i a, sf::Vector2i b) {
-    return sqrt((a.x - b.x)^2 + (a.y - b.y)^2);
+    float distance = sqrt(pow(b.x%WIN_WIDTH - a.x%WIN_WIDTH, 2) + pow(b.y - a.y, 2));
+    return distance;
 }

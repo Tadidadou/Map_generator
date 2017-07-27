@@ -12,13 +12,3 @@ enum terrain_type {
     HILL,
     MOUNTAIN
 };
-
-struct provinces_map {
-    terrain_type type;
-    int num_prov;
-};
-
-struct coord_terrain {
-    terrain_type type;
-    sf::Vector2f coord;
-};
