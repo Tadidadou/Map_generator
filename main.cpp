@@ -7,19 +7,20 @@
 using namespace std;
 
 int main() {
-    sf::VertexArray earth;
-    sf::RenderWindow win(sf::VideoMode(WIN_WIDTH, WIN_HEIGHT), "Map generator", sf::Style::Close);
+    sf::VertexArray earth_map;
+    sf::RenderWindow win(sf::VideoMode(1600, 900), "Map generator", sf::Style::Close);
     win.setFramerateLimit(60);
     std::vector<Province> all_provinces;
 
-    Generator generator(40.0);
-    earth = generator.cylindric_map_generation();
+    Generator generator(40.0, 3000, 1500);
+    earth_map = generator.cylindric_map_generation();
+    Map_dimensions map_dimensions = generator.GetMap_dimensions();
 
     win.clear();
-    win.draw(earth);
+    win.draw(earth_map);
     win.display();
 
-    Map_cut map_cut(earth, 1000);
+    Map_cut map_cut(earth_map, 1000, map_dimensions);
     all_provinces = map_cut.provinces_generation(generator.GetHeightMap(), generator.GetEarth_percent());
 
     int offsetX = 0;
@@ -47,7 +48,7 @@ int main() {
                     clicPos = localPosition;
                     if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
                     {
-                        int id = map_cut.GetSelectedProvId(mod((clicPos.x - offsetX), WIN_WIDTH), clicPos.y); //TODO : - offsetY
+                        int id = map_cut.GetSelectedProvId(mod((clicPos.x - offsetX), map_dimensions.width), clicPos.y); //TODO : - offsetY
                         // On click on a province
                         if(id != 0) {
                             Province prov = map_cut.GetProvinces()[id-1];
@@ -102,15 +103,15 @@ int main() {
 
             offsetX += move/zoom;
 
-            if (offsetX > WIN_WIDTH)
+            if (offsetX > map_dimensions.width)
             {
-                offsetX -= WIN_WIDTH;
-                slide.translate(sf::Vector2f(-WIN_WIDTH, 0));
+                offsetX -= map_dimensions.width;
+                slide.translate(sf::Vector2f(-map_dimensions.width, 0));
             }
-            else if (offsetX <= -WIN_WIDTH)
+            else if (offsetX <= -map_dimensions.width)
             {
-                offsetX += WIN_WIDTH;
-                slide.translate(sf::Vector2f(WIN_WIDTH, 0));
+                offsetX += map_dimensions.width;
+                slide.translate(sf::Vector2f(map_dimensions.width, 0));
             }
 
             slide.translate(sf::Vector2f(move/zoom, moveY/zoom));
@@ -121,9 +122,9 @@ int main() {
         loopSlide = slide;
 
         if (offsetX > 0)
-            loopSlide.translate(sf::Vector2f(-WIN_WIDTH, 0));
+            loopSlide.translate(sf::Vector2f(-map_dimensions.width, 0));
         else
-            loopSlide.translate(sf::Vector2f(WIN_WIDTH, 0));
+            loopSlide.translate(sf::Vector2f(map_dimensions.width, 0));
 
         win.clear();
 
@@ -140,8 +141,8 @@ int main() {
             win.draw(map_cut.show_specified_province(id_prov), loopSlide);
         }
         else {
-            win.draw(earth, slide);
-            win.draw(earth, loopSlide);
+            win.draw(earth_map, slide);
+            win.draw(earth_map, loopSlide);
         }
 
         win.display();

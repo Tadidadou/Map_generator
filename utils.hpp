@@ -9,14 +9,12 @@
 
 bool isOK(int percent);
 
-struct RegionPoint
-{
+struct RegionPoint {
     int x, y, id;
     RegionPoint(int arg_x, int arg_y, int arg_id);
 };
 
-struct IterationResult
-{
+struct IterationResult {
     int changes;
     std::vector<RegionPoint> newRegionPoints;
 
@@ -25,8 +23,7 @@ struct IterationResult
     void addRP(int x, int y, int id);
 };
 
-struct Neighbour
-{
+struct Neighbour {
     int dest;
     float distance;
 };
@@ -43,6 +40,6 @@ struct coord_terrain {
 
 
 int mod(int, int);
-float calculate_distance(sf::Vector2i, sf::Vector2i);
+float calculate_distance(sf::Vector2i, sf::Vector2i, Map_dimensions);
 
 #endif // UTILS_HPP_INCLUDED

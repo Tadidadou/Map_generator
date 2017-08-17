@@ -21,7 +21,7 @@ int mod(int a, int b) {
 }
 
 /// Calculates the distance between two 2D-coordinates
-float calculate_distance(sf::Vector2i a, sf::Vector2i b) {
-    float distance = sqrt(pow(b.x%WIN_WIDTH - a.x%WIN_WIDTH, 2) + pow(b.y - a.y, 2));
+float calculate_distance(sf::Vector2i a, sf::Vector2i b, Map_dimensions map_dimensions) {
+    float distance = sqrt(pow(b.x%map_dimensions.height - a.x%map_dimensions.width, 2) + pow(b.y - a.y, 2));
     return distance;
 }

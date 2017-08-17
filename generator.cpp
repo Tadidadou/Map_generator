@@ -5,17 +5,23 @@
 
 
 Generator::Generator() {
-    this->earth_percent = 40.00;
+    Generator(40.00, 0, 0);
 }
-
-
 Generator::Generator(float earth_p) {
-    if (earth_p >= 20.0 && earth_p < 80.0)
+    /*if (earth_p >= 20.0 && earth_p < 80.0)
         this->earth_percent = earth_p;
     else {
         std::cout << "The earth-percentage can't be less than 20\% or more than 80\%, it has been set to 40\% as it is by default" << std::endl;
         this->earth_percent = 40.00;
-    }
+    }*/
+    Generator(earth_p, 1600, 900);
+}
+Generator::Generator(float earth_p, int width, int height) {
+    this->earth_percent = earth_p;
+    this->dimensions.width = width;
+    this->dimensions.height = height;
+
+    std::cout << "Map dimensions : Width -> " << dimensions.width << "   -   Height -> " << dimensions.height << std::endl;
 }
 
 
@@ -87,7 +93,7 @@ sf::VertexArray Generator::plane_map_generation() {
     noise::module::Select terrain;
 
     ///Other variables
-    sf::VertexArray earth_map(sf::Points, WIN_WIDTH * WIN_HEIGHT);
+    sf::VertexArray earth_map(sf::Points, dimensions.width * dimensions.height);
     noise::utils::NoiseMapBuilderPlane heightMapBuilder;
     float x, y;
 
@@ -114,7 +120,7 @@ sf::VertexArray Generator::plane_map_generation() {
     ///Generating the height map
     heightMapBuilder.SetSourceModule(terrain);
     heightMapBuilder.SetDestNoiseMap(heightMap);
-    heightMapBuilder.SetDestSize(WIN_WIDTH, WIN_HEIGHT);
+    heightMapBuilder.SetDestSize(dimensions.width, dimensions.height);
     heightMapBuilder.SetBounds(x, x + 6.0, y, y + 3.375);
     heightMapBuilder.Build();
     std::cout << "Map building done" << std::endl;
@@ -135,7 +141,7 @@ sf::VertexArray Generator::cylindric_map_generation() {
 
     ///Other variables
     noise::utils::NoiseMapBuilderCylinder heightMapBuilder;
-    sf::VertexArray earth_map(sf::Points, WIN_WIDTH * WIN_HEIGHT);
+    sf::VertexArray earth_map(sf::Points, dimensions.width * dimensions.height);
     RendererVertex renderer(earth_map);
     float y;
 
@@ -161,7 +167,7 @@ sf::VertexArray Generator::cylindric_map_generation() {
     ///Generating the height map
     heightMapBuilder.SetSourceModule(terrain);
     heightMapBuilder.SetDestNoiseMap(heightMap);
-    heightMapBuilder.SetDestSize(WIN_WIDTH, WIN_HEIGHT);
+    heightMapBuilder.SetDestSize(dimensions.width, dimensions.height);
     heightMapBuilder.SetBounds(-180.0, 180.0, y, y + 3.5);
     heightMapBuilder.Build();
     std::cout << "Map building done" << std::endl;

@@ -11,7 +11,7 @@
 
 class Map_cut {
 public:
-    Map_cut(sf::VertexArray, int);
+    Map_cut(sf::VertexArray, int, Map_dimensions);
     ~Map_cut();
 
     std::vector<Province> provinces_generation(noise::utils::NoiseMap, float);
@@ -37,13 +37,14 @@ public:
 
 private:
     int isBorder(int, int);
-    bool isGc(int, int);
+    //bool isGc(int, int);
     Province new_province(int, sf::VertexArray);
     int prov_map_generation(noise::utils::NoiseMap, float);
     sf::VertexArray generate_vertex_prov_map();
     sf::VertexArray generate_vertex_prov_borders_map();
     std::vector<Neighbour> determine_neighbours(int);
 
+    Map_dimensions map_dimensions;
     int nb_prov;
     std::vector<std::vector<provinces_map> > prov_map;
     std::vector<Province> all_provinces;

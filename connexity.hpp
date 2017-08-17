@@ -4,6 +4,6 @@
 #include "constants.hpp"
 #include "utils.hpp"
 
-IterationResult connexity(std::vector<std::vector<provinces_map> > pMap, int sharpness);
+IterationResult connexity(std::vector<std::vector<provinces_map> > pMap, int sharpness, Map_dimensions Map_dimensions);
 
 #endif // CONNEXITY_HPP_INCLUDED
